@@ -5,7 +5,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace Smart_Tools.WPF.Views
+namespace CoinTrace.WPF.Views
 {
     /// <summary>
     /// Interaction logic for MemorialView.xaml

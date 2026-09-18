@@ -1,9 +1,7 @@
-using System;
 using System.Windows;
 using System.Windows.Threading;
-using Smart_Tools.WPF.Controllers;
 
-namespace Smart_Tools.WPF.Views
+namespace CoinTrace.WPF.Views
 {
     public partial class LoginView : Window
     {
