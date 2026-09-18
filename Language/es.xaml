@@ -12,4 +12,9 @@
         en.xaml makes a missing/renamed entry easy to spot by eye.
     -->
 
+    <!--  ============ MEMORIAL ============  -->
+    <system:String x:Key="Str_Memorial_Name">En Memoria de TOXY, con Cariño</system:String>
+    <system:String x:Key="Str_Memorial_Dates">[5 de julio de 2019] – [23 de junio de 2026]</system:String>
+    <system:String x:Key="Str_Memorial_Message">Un día tendré alas, y estaremos juntos de nuevo.</system:String>
+
 </ResourceDictionary>

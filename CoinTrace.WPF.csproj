@@ -2,12 +2,16 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<!-- Appended the Windows SDK build version to enable WinRT APIs -->
 		<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+		<RootNamespace>CoinTrace.WPF</RootNamespace>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UseWPF>true</UseWPF>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<AssemblyName>CoinTrace</AssemblyName>
+		<Product>Coin Trace</Product>
+		<AssemblyTitle>Coin Trace</AssemblyTitle>
+		<ApplicationIcon>Images\Graphicloads-Flat-Finance-Dollar.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,6 +20,15 @@
 
 	<ItemGroup>
 		<Resource Include="Images\Graphicloads-Flat-Finance-Dollar.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Images\Memento.jpeg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Images\Memento-bg.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
