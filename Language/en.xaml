@@ -1,0 +1,20 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        ================= LANGUAGE: English (en) =================
+        One dictionary per supported language, all with the exact same
+        set of x:Key entries. Swapped at runtime by LanguageManager the
+        same way ThemeManager swaps Light.xaml/Dark.xaml - so every
+        Text="{DynamicResource Str_...}" in the views updates instantly,
+        no restart required.
+
+        Naming convention: Str_<View>_<Element>, e.g. Str_VideoEditor_Title.
+        Keeping the view name in the key avoids collisions once every
+        view has been converted, and makes it obvious at a glance which
+        screen a given string belongs to when this file gets long.
+    -->
+
+</ResourceDictionary>
