@@ -2,10 +2,11 @@
 using CoinTrace.WPF.Views;
 using MaterialDesignThemes.Wpf;
 using Smart_Tools.WPF.Controllers;
-using Smart_Tools.WPF.Views;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using ContactDeveloperView = CoinTrace.WPF.Views.ContactDeveloperView;
+using MemorialView = CoinTrace.WPF.Views.MemorialView;
 
 namespace CoinTrace.WPF
 {

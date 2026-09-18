@@ -1,40 +1,119 @@
-<Window x:Class="Smart_Tools.WPF.Views.CreateAccountView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Create your account" Height="520" Width="380"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
-    <StackPanel Margin="24">
-        <TextBlock Text="Welcome to Coin Trace" FontSize="16" FontWeight="Bold" Margin="0,0,0,4"/>
-        <TextBlock Text="Create a local account to protect your data." Foreground="Gray"
-                   TextWrapping="Wrap" Margin="0,0,0,16"/>
+<Window
+    x:Class="CoinTrace.WPF.Views.CreateAccountView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    Title="Create your account"
+    Width="400"
+    Height="640"
+    Background="{DynamicResource ContentBg}"
+    Icon="/Images/Graphicloads-Flat-Finance-Dollar.ico"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen">
+    <Border
+        Margin="20"
+        Padding="24"
+        Background="{DynamicResource CardBg}"
+        BorderBrush="{DynamicResource CardBorder}"
+        BorderThickness="1"
+        CornerRadius="12">
+        <Border.Effect>
+            <DropShadowEffect
+                BlurRadius="18"
+                Direction="270"
+                Opacity="0.15"
+                ShadowDepth="3"
+                Color="Black" />
+        </Border.Effect>
 
-        <TextBlock Text="Username" Margin="0,0,0,4"/>
-        <TextBox x:Name="UsernameBox" Padding="6"/>
+        <StackPanel>
+            <Border
+                Width="44"
+                Height="44"
+                Margin="0,0,0,12"
+                HorizontalAlignment="Center"
+                Background="{DynamicResource AccentGradient}"
+                CornerRadius="12">
+                <materialDesign:PackIcon
+                    Width="24"
+                    Height="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Kind="HandCoin" />
+            </Border>
 
-        <TextBlock Text="Password" Margin="0,14,0,4"/>
-        <PasswordBox x:Name="PasswordBox" Padding="6"/>
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+                Foreground="{DynamicResource TextPrimary}"
+                Text="Welcome to Coin Trace" />
+            <TextBlock
+                Margin="0,2,0,20"
+                HorizontalAlignment="Center"
+                FontSize="12.5"
+                Foreground="{DynamicResource TextSecondary}"
+                Text="Create a local account to protect your data"
+                TextWrapping="Wrap" />
 
-        <TextBlock Text="Confirm password" Margin="0,14,0,4"/>
-        <PasswordBox x:Name="ConfirmPasswordBox" Padding="6"/>
+            <TextBox
+                x:Name="UsernameBox"
+                Margin="0,0,0,14"
+                materialDesign:HintAssist.Hint="Username"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
 
-        <TextBlock Text="Secret question" Margin="0,14,0,4"/>
-        <ComboBox x:Name="SecretQuestionCombo" Padding="6" IsEditable="True">
-            <ComboBoxItem Content="What was your first pet's name?"/>
-            <ComboBoxItem Content="What city were you born in?"/>
-            <ComboBoxItem Content="What was your childhood nickname?"/>
-            <ComboBoxItem Content="What is your mother's maiden name?"/>
-        </ComboBox>
+            <PasswordBox
+                x:Name="PasswordBox"
+                Margin="0,0,0,14"
+                materialDesign:HintAssist.Hint="Password"
+                Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
 
-        <TextBlock Text="Answer" Margin="0,14,0,4"/>
-        <TextBox x:Name="SecretAnswerBox" Padding="6"/>
-        <TextBlock Text="Used to reset your password if you forget it. Not case-sensitive."
-                   Foreground="Gray" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+            <PasswordBox
+                x:Name="ConfirmPasswordBox"
+                Margin="0,0,0,14"
+                materialDesign:HintAssist.Hint="Confirm password"
+                Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
 
-        <TextBlock x:Name="ErrorText" Foreground="Red" TextWrapping="Wrap"
-                   Margin="0,14,0,0" Visibility="Collapsed"/>
+            <ComboBox
+                x:Name="SecretQuestionCombo"
+                Margin="0,0,0,14"
+                materialDesign:HintAssist.Hint="Secret question"
+                IsEditable="True"
+                Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                <ComboBoxItem Content="What was your first pet's name?" />
+                <ComboBoxItem Content="What city were you born in?" />
+                <ComboBoxItem Content="What was your childhood nickname?" />
+                <ComboBoxItem Content="What is your mother's maiden name?" />
+            </ComboBox>
 
-        <Button x:Name="CreateButton" Content="Create account" Padding="6" Margin="0,20,0,0"
-                IsDefault="True" Click="CreateButton_Click"/>
-    </StackPanel>
+            <TextBox
+                x:Name="SecretAnswerBox"
+                materialDesign:HintAssist.Hint="Answer"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+            <TextBlock
+                Margin="0,6,0,0"
+                FontSize="11"
+                Foreground="{DynamicResource TextSecondary}"
+                Text="Used to reset your password if you forget it. Not case-sensitive."
+                TextWrapping="Wrap" />
+
+            <TextBlock
+                x:Name="ErrorText"
+                Margin="0,14,0,0"
+                FontSize="12"
+                Foreground="#E5484D"
+                TextWrapping="Wrap"
+                Visibility="Collapsed" />
+
+            <Button
+                x:Name="CreateButton"
+                Margin="0,20,0,0"
+                HorizontalAlignment="Stretch"
+                Click="CreateButton_Click"
+                Content="Create account"
+                IsDefault="True"
+                Style="{StaticResource MaterialDesignRaisedButton}" />
+        </StackPanel>
+    </Border>
 </Window>

@@ -1,8 +1,8 @@
+using Smart_Tools.WPF.Controllers;
 using System.Windows;
 using System.Windows.Controls;
-using Smart_Tools.WPF.Controllers;
 
-namespace Smart_Tools.WPF.Views
+namespace CoinTrace.WPF.Views
 {
     public partial class CreateAccountView : Window
     {

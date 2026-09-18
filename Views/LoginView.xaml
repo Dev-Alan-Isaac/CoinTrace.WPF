@@ -1,32 +1,109 @@
-<Window x:Class="Smart_Tools.WPF.Views.LoginView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sign in" Height="330" Width="360"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
-    <StackPanel Margin="24">
-        <TextBlock Text="Username" Margin="0,0,0,4"/>
-        <TextBox x:Name="UsernameBox" Padding="6"/>
+<Window
+    x:Class="CoinTrace.WPF.Views.LoginView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    Title="Sign in"
+    Width="380"
+    Height="420"
+    Background="{DynamicResource ContentBg}"
+    Icon="/Images/Graphicloads-Flat-Finance-Dollar.ico"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen">
+    <Border
+        Margin="20"
+        Padding="24"
+        Background="{DynamicResource CardBg}"
+        BorderBrush="{DynamicResource CardBorder}"
+        BorderThickness="1"
+        CornerRadius="12">
+        <Border.Effect>
+            <DropShadowEffect
+                BlurRadius="18"
+                Direction="270"
+                Opacity="0.15"
+                ShadowDepth="3"
+                Color="Black" />
+        </Border.Effect>
 
-        <TextBlock Text="Password" Margin="0,16,0,4"/>
-        <PasswordBox x:Name="PasswordBox" Padding="6"/>
+        <StackPanel>
+            <!--  Brand badge, same treatment as MainWindow's sidebar header  -->
+            <Border
+                Width="44"
+                Height="44"
+                Margin="0,0,0,12"
+                HorizontalAlignment="Center"
+                Background="{DynamicResource AccentGradient}"
+                CornerRadius="12">
+                <materialDesign:PackIcon
+                    Width="24"
+                    Height="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Kind="HandCoin" />
+            </Border>
 
-        <TextBlock x:Name="ErrorText" Foreground="Red" TextWrapping="Wrap"
-                   Margin="0,12,0,0" Visibility="Collapsed"/>
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+                Foreground="{DynamicResource TextPrimary}"
+                Text="Welcome back" />
+            <TextBlock
+                Margin="0,2,0,20"
+                HorizontalAlignment="Center"
+                FontSize="12.5"
+                Foreground="{DynamicResource TextSecondary}"
+                Text="Sign in to Coin Trace" />
 
-        <Grid Margin="0,20,0,0">
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left">
-                <Hyperlink x:Name="ForgotPasswordLink" Click="ForgotPasswordLink_Click">
+            <TextBox
+                x:Name="UsernameBox"
+                Margin="0,0,0,16"
+                materialDesign:HintAssist.Hint="Username"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+            <PasswordBox
+                x:Name="PasswordBox"
+                materialDesign:HintAssist.Hint="Password"
+                Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
+
+            <TextBlock
+                x:Name="ErrorText"
+                Margin="0,12,0,0"
+                FontSize="12"
+                Foreground="#E5484D"
+                TextWrapping="Wrap"
+                Visibility="Collapsed" />
+
+            <TextBlock Margin="0,14,0,0">
+                <Hyperlink
+                    x:Name="ForgotPasswordLink"
+                    Click="ForgotPasswordLink_Click"
+                    Foreground="{DynamicResource AccentColor}">
                     Forgot password?
                 </Hyperlink>
             </TextBlock>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="CancelButton" Content="Cancel" Width="80" Margin="0,0,8,0"
-                        Click="CancelButton_Click"/>
-                <Button x:Name="LoginButton" Content="Sign in" Width="80" IsDefault="True"
-                        Click="LoginButton_Click"/>
+            <StackPanel
+                Margin="0,20,0,0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="CancelButton"
+                    Width="90"
+                    Margin="0,0,8,0"
+                    Click="CancelButton_Click"
+                    Content="Cancel"
+                    Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button
+                    x:Name="LoginButton"
+                    Width="100"
+                    Click="LoginButton_Click"
+                    Content="Sign in"
+                    IsDefault="True"
+                    Style="{StaticResource MaterialDesignRaisedButton}" />
             </StackPanel>
-        </Grid>
-    </StackPanel>
+        </StackPanel>
+    </Border>
 </Window>
