@@ -1,8 +1,7 @@
-using System;
-using System.Windows;
 using Smart_Tools.WPF.Controllers;
+using System.Windows;
 
-namespace Smart_Tools.WPF.Views
+namespace CoinTrace.WPF.Views
 {
     public partial class ForgotPasswordView : Window
     {

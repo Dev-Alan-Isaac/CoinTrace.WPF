@@ -1,6 +1,6 @@
 ﻿using CoinTrace.WPF.Controllers;
+using CoinTrace.WPF.Views;
 using Smart_Tools.WPF.Controllers;
-using Smart_Tools.WPF.Views;
 using System.Windows;
 
 namespace CoinTrace.WPF

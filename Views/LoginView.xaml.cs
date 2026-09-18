@@ -1,3 +1,4 @@
+using Smart_Tools.WPF.Controllers;
 using System.Windows;
 using System.Windows.Threading;
 

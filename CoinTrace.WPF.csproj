@@ -15,10 +15,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="README\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Resource Include="Images\Graphicloads-Flat-Finance-Dollar.ico" />
 	</ItemGroup>
 
@@ -51,6 +47,10 @@
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="README\" />
 	</ItemGroup>
 
 </Project>

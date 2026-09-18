@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Windows;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace Smart_Tools.WPF.Views
+namespace CoinTrace.WPF.Views
 {
     /// <summary>
     /// Interaction logic for ContactDeveloperView.xaml
