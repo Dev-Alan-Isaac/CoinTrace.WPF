@@ -1,12 +1,379 @@
-﻿<UserControl x:Class="CoinTrace.WPF.Views.BorrowerRegistrationView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CoinTrace.WPF.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="CoinTrace.WPF.Views.BorrowerRegistrationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:CoinTrace.WPF.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:CoinTrace.WPF.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:CoinTrace.WPF.Models"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    d:DesignHeight="600"
+    d:DesignWidth="1000"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+
+        <ObjectDataProvider
+            x:Key="BorrowerStatusValues"
+            MethodName="GetValues"
+            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:BorrowerStatus" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <converters:BorrowerStatusToBrushConverter x:Key="StatusToBrush" />
+        <converters:BorrowerStatusToLabelConverter x:Key="StatusToLabel" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <Style x:Key="FieldTextBoxStyle" TargetType="Control">
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="Background" Value="{DynamicResource CardBg}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style BasedOn="{StaticResource FieldTextBoxStyle}" TargetType="TextBox" />
+        <Style BasedOn="{StaticResource FieldTextBoxStyle}" TargetType="ComboBox" />
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource AccentGradient}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.9" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.75" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#E5484D" />
+            <Setter Property="BorderBrush" Value="#E5484D" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Small round icon badge used for the contact-method row (phone/email/address)  -->
+        <Style x:Key="ContactBadgeStyle" TargetType="Border">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="Background" Value="{DynamicResource AccentColorSubtle}" />
+        </Style>
+
+    </UserControl.Resources>
+
     <Grid>
-            
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  ================= LEFT: borrower list =================  -->
+        <Border
+            Grid.Column="0"
+            Background="{DynamicResource CardBg}"
+            BorderBrush="{DynamicResource CardBorder}"
+            BorderThickness="0,0,1,0">
+            <DockPanel>
+
+                <StackPanel Margin="16,16,16,12" DockPanel.Dock="Top">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Text="Borrowers" />
+
+                    <TextBlock
+                        Margin="0,14,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Search" />
+                    <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" />
+
+                    <Button
+                        x:Name="AddBorrowerButton"
+                        Margin="0,12,0,0"
+                        HorizontalAlignment="Stretch"
+                        Click="AddBorrowerButton_Click"
+                        Content="+ Add borrower"
+                        Style="{StaticResource PrimaryButtonStyle}" />
+                </StackPanel>
+
+                <ListBox
+                    x:Name="BorrowerListBox"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    SelectionChanged="BorrowerListBox_SelectionChanged">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="12,4"
+                                Padding="12"
+                                Background="{DynamicResource ContentBg}"
+                                CornerRadius="8">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Style.Triggers>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <Binding Path="IsSelected" RelativeSource="{RelativeSource AncestorType=ListBoxItem}" />
+                                                </DataTrigger.Binding>
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}" />
+                                                <Setter Property="BorderThickness" Value="2" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <StackPanel>
+                                    <TextBlock
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextPrimary}"
+                                        Text="{Binding FullName}"
+                                        TextTrimming="CharacterEllipsis" />
+
+                                    <Border
+                                        Margin="0,6,0,0"
+                                        Padding="8,2"
+                                        HorizontalAlignment="Left"
+                                        Background="{Binding Status, Converter={StaticResource StatusToBrush}}"
+                                        CornerRadius="10">
+                                        <TextBlock
+                                            FontSize="10"
+                                            FontWeight="SemiBold"
+                                            Foreground="White"
+                                            Text="{Binding Status, Converter={StaticResource StatusToLabel}}" />
+                                    </Border>
+
+                                    <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                                        <Border
+                                            Style="{StaticResource ContactBadgeStyle}"
+                                            ToolTip="Has a phone number on file"
+                                            Visibility="{Binding HasPhone, Converter={StaticResource BoolToVis}}">
+                                            <materialDesign:PackIcon
+                                                Width="12"
+                                                Height="12"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource AccentColor}"
+                                                Kind="Phone" />
+                                        </Border>
+                                        <Border
+                                            Style="{StaticResource ContactBadgeStyle}"
+                                            ToolTip="Has an email on file"
+                                            Visibility="{Binding HasEmail, Converter={StaticResource BoolToVis}}">
+                                            <materialDesign:PackIcon
+                                                Width="12"
+                                                Height="12"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource AccentColor}"
+                                                Kind="Email" />
+                                        </Border>
+                                        <Border
+                                            Style="{StaticResource ContactBadgeStyle}"
+                                            ToolTip="Has an address on file"
+                                            Visibility="{Binding HasAddress, Converter={StaticResource BoolToVis}}">
+                                            <materialDesign:PackIcon
+                                                Width="12"
+                                                Height="12"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource AccentColor}"
+                                                Kind="MapMarker" />
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </DockPanel>
+        </Border>
+
+        <!--  ================= RIGHT: detail form =================  -->
+        <Grid Grid.Column="1" Background="{DynamicResource ContentBg}">
+
+            <StackPanel
+                x:Name="EmptyStatePanel"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <materialDesign:PackIcon
+                    Width="40"
+                    Height="40"
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource TextSecondary}"
+                    Kind="AccountMultipleOutline" />
+                <TextBlock
+                    Margin="0,10,0,0"
+                    Foreground="{DynamicResource TextSecondary}"
+                    Text="Select a borrower, or add a new one" />
+            </StackPanel>
+
+            <ScrollViewer
+                x:Name="DetailScrollViewer"
+                VerticalScrollBarVisibility="Auto"
+                Visibility="Collapsed">
+                <StackPanel
+                    x:Name="DetailPanel"
+                    MaxWidth="520"
+                    Margin="32"
+                    HorizontalAlignment="Left">
+
+                    <Grid>
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource TextPrimary}"
+                            Text="Borrower details" />
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                x:Name="SavedIcon"
+                                Width="14"
+                                Height="14"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource AccentColor}"
+                                Kind="CheckCircle"
+                                Opacity="0" />
+                            <TextBlock
+                                x:Name="SavedText"
+                                Margin="4,0,0,0"
+                                VerticalAlignment="Center"
+                                FontSize="11"
+                                Foreground="{DynamicResource TextSecondary}"
+                                Opacity="0"
+                                Text="Saved" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Margin="0,20,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Full name" />
+                    <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock
+                        Margin="0,16,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Status" />
+                    <ComboBox ItemsSource="{Binding Source={StaticResource BorrowerStatusValues}}" SelectedItem="{Binding Status}" />
+
+                    <TextBlock
+                        Margin="0,16,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Phone" />
+                    <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock
+                        Margin="0,16,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Email" />
+                    <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock
+                        Margin="0,16,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Address" />
+                    <TextBox
+                        Height="60"
+                        VerticalContentAlignment="Top"
+                        AcceptsReturn="True"
+                        Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        Margin="0,16,0,4"
+                        Style="{StaticResource FieldLabelStyle}"
+                        Text="Notes" />
+                    <TextBox
+                        Height="90"
+                        VerticalContentAlignment="Top"
+                        AcceptsReturn="True"
+                        Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap" />
+
+                    <Button
+                        x:Name="DeleteBorrowerButton"
+                        Margin="0,24,0,0"
+                        HorizontalAlignment="Left"
+                        Click="DeleteBorrowerButton_Click"
+                        Content="Delete borrower"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+
     </Grid>
 </UserControl>

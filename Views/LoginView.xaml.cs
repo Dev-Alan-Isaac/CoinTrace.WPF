@@ -1,15 +1,22 @@
 using Smart_Tools.WPF.Controllers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace CoinTrace.WPF.Views
 {
-    public partial class LoginView : Window
+    public partial class LoginView : UserControl
     {
         private readonly AccountManager _accountManager = new();
         private readonly DispatcherTimer _lockoutTimer;
 
-        /// <summary>The username that was signed in with, set once DialogResult is true.</summary>
+        /// <summary>Raised once a login succeeds. MainWindow reveals the real app in response.</summary>
+        public event EventHandler? LoginSucceeded;
+
+        /// <summary>Raised when the person clicks "Forgot password?". MainWindow swaps in ForgotPasswordView.</summary>
+        public event EventHandler? ForgotPasswordRequested;
+
+        /// <summary>The username that was signed in with, set once LoginSucceeded fires.</summary>
         public string Username { get; private set; } = string.Empty;
 
         public LoginView()
@@ -20,7 +27,7 @@ namespace CoinTrace.WPF.Views
             _lockoutTimer.Tick += LockoutTimer_Tick;
 
             Loaded += LoginView_Loaded;
-            Closed += (_, _) => _lockoutTimer.Stop();
+            Unloaded += (_, _) => _lockoutTimer.Stop();
         }
 
         private void LoginView_Loaded(object sender, RoutedEventArgs e)
@@ -48,8 +55,7 @@ namespace CoinTrace.WPF.Views
             {
                 case LoginResult.Success:
                     Username = username;
-                    DialogResult = true;
-                    Close();
+                    LoginSucceeded?.Invoke(this, EventArgs.Empty);
                     break;
 
                 case LoginResult.LockedOut:
@@ -67,23 +73,23 @@ namespace CoinTrace.WPF.Views
 
         private void ForgotPasswordLink_Click(object sender, RoutedEventArgs e)
         {
-            var forgotPasswordView = new ForgotPasswordView { Owner = this };
-            forgotPasswordView.ShowDialog();
-
-            // Re-check in case a reset succeeded (clears any lockout) or a
-            // wrong-answer streak just tripped one.
-            RefreshLockoutState();
+            ForgotPasswordRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
-            Close();
+            Application.Current.Shutdown();
         }
 
         // ---- Lockout handling ----
 
-        private void RefreshLockoutState()
+        /// <summary>
+        /// Re-checks lockout state. Call this whenever this control becomes
+        /// visible again (e.g. returning from the forgot-password flow),
+        /// since a reset clears the lockout and a wrong-answer streak there
+        /// can trip a new one.
+        /// </summary>
+        public void RefreshLockoutState()
         {
             if (_accountManager.IsLockedOut(out TimeSpan remaining))
                 ApplyLockoutUi(remaining);

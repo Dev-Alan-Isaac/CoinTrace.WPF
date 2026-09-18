@@ -246,13 +246,18 @@
 
         <!--
             ================= SIDEBAR =================
+            Collapsed (Visibility + zero column width) until a login
+            succeeds - see MainWindow.xaml.cs ShowAuthScreen/CompleteLogin.
             The Effect renders outside the Border's own layout bounds and
             the parent Grid doesn't clip by default, so this soft shadow
             bleeds a few pixels into the content column - reads as a
             panel gently floating above the content instead of a flat
             block of color butted up against it.
         -->
-        <Border Grid.Column="0" Background="{DynamicResource SidebarBg}">
+        <Border
+            x:Name="SidebarBorder"
+            Grid.Column="0"
+            Background="{DynamicResource SidebarBg}">
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="18"
@@ -397,8 +402,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!--  ================= BREADCRUMB =================  -->
+                <!--
+                    ================= BREADCRUMB =================
+                    Collapsed until a login succeeds, same as the sidebar.
+                -->
                 <Border
+                    x:Name="BreadcrumbBorder"
                     Grid.Row="0"
                     Padding="20,14"
                     Background="{DynamicResource CardBg}"
@@ -443,6 +452,10 @@
                     effectively infinite available height, which is what let a
                     large DataGrid (e.g. 10,000+ rows) balloon the whole page
                     instead of scrolling within its own bounds.
+                    
+                    Also hosts the pre-login screens (CreateAccountView,
+                    LoginView, ForgotPasswordView) before the sidebar/
+                    breadcrumb are revealed - see MainWindow.xaml.cs.
                 -->
                 <ContentControl
                     x:Name="MainContentArea"

@@ -45,6 +45,15 @@ namespace CoinTrace.WPF
         private readonly ContactDeveloperView _contactDeveloperView = new ContactDeveloperView();
         private readonly SettingsView _settingsView = new SettingsView();
 
+        // ---------------- Auth gating ----------------
+        // MainContentArea also hosts the pre-login screens. The sidebar and
+        // breadcrumb stay collapsed until CompleteLogin() runs, so there's
+        // nothing navigable before the person is authenticated.
+        private readonly AccountManager _accountManager = new();
+        private CreateAccountView? _createAccountView;
+        private LoginView? _loginView;
+        private ForgotPasswordView? _forgotPasswordView;
+
 
         public MainWindow()
         {
@@ -53,6 +62,8 @@ namespace CoinTrace.WPF
             UpdateThemeToggleIcon();
 
             _memorialView.BackRequested += MemorialView_BackRequested;
+
+            ShowAuthScreen();
         }
 
 
@@ -186,5 +197,78 @@ namespace CoinTrace.WPF
             NavigateTo(_settingsView, "Settings");
         }
 
+
+        // ---------------- Auth gating ----------------
+        // Everything below decides what MainContentArea shows before the
+        // person is signed in, using the same swap-the-content mechanism
+        // as NavigateTo above, just without a visible sidebar/breadcrumb
+        // to navigate from.
+
+        private void ShowAuthScreen()
+        {
+            SidebarBorder.Visibility = Visibility.Collapsed;
+            SidebarColumn.Width = new GridLength(0);
+            BreadcrumbBorder.Visibility = Visibility.Collapsed;
+
+            if (!_accountManager.HasAccount)
+                ShowCreateAccount();
+            else
+                ShowLogin();
+        }
+
+        private void ShowCreateAccount()
+        {
+            if (_createAccountView is null)
+            {
+                _createAccountView = new CreateAccountView();
+                _createAccountView.AccountCreated += (_, _) => ShowLogin();
+            }
+
+            MainContentArea.Content = _createAccountView;
+        }
+
+        private void ShowLogin()
+        {
+            if (_loginView is null)
+            {
+                _loginView = new LoginView();
+                _loginView.LoginSucceeded += (_, _) => CompleteLogin();
+                _loginView.ForgotPasswordRequested += (_, _) => ShowForgotPassword();
+            }
+
+            // Picks up any lockout that started elsewhere (e.g. a failed
+            // password-reset attempt) since this control instance persists
+            // across navigations away and back.
+            _loginView.RefreshLockoutState();
+
+            MainContentArea.Content = _loginView;
+        }
+
+        private void ShowForgotPassword()
+        {
+            if (_forgotPasswordView is null)
+            {
+                _forgotPasswordView = new ForgotPasswordView();
+                _forgotPasswordView.PasswordResetCompleted += (_, _) => ShowLogin();
+                _forgotPasswordView.BackToLoginRequested += (_, _) => ShowLogin();
+            }
+
+            MainContentArea.Content = _forgotPasswordView;
+        }
+
+        /// <summary>
+        /// Reveals the real app once a login succeeds: brings back the
+        /// sidebar/breadcrumb and lands on a sensible default page.
+        /// </summary>
+        private void CompleteLogin()
+        {
+            SidebarBorder.Visibility = Visibility.Visible;
+            SidebarColumn.Width = new GridLength(_isCompact ? SidebarCompactWidth : SidebarExpandedWidth);
+            BreadcrumbBorder.Visibility = Visibility.Visible;
+
+            // Triggers BtnSettings_Click via its Checked handler, which
+            // calls NavigateTo and sets the breadcrumb.
+            BtnSettings.IsChecked = true;
+        }
     }
 }

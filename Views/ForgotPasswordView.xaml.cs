@@ -1,11 +1,18 @@
 using Smart_Tools.WPF.Controllers;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CoinTrace.WPF.Views
 {
-    public partial class ForgotPasswordView : Window
+    public partial class ForgotPasswordView : UserControl
     {
         private readonly AccountManager _accountManager = new();
+
+        /// <summary>Raised after a successful password reset. MainWindow swaps back to LoginView.</summary>
+        public event EventHandler? PasswordResetCompleted;
+
+        /// <summary>Raised when the person backs out without resetting anything.</summary>
+        public event EventHandler? BackToLoginRequested;
 
         public ForgotPasswordView()
         {
@@ -15,16 +22,25 @@ namespace CoinTrace.WPF.Views
 
         private void ForgotPasswordView_Loaded(object sender, RoutedEventArgs e)
         {
+            // Reset to step 1 each time this control is shown, in case it's
+            // being reused after a previous cancelled attempt.
+            QuestionStep.Visibility = Visibility.Visible;
+            NewPasswordStep.Visibility = Visibility.Collapsed;
+            AnswerBox.Clear();
+            QuestionErrorText.Visibility = Visibility.Collapsed;
+            NewPasswordBox.Clear();
+            ConfirmNewPasswordBox.Clear();
+            PasswordErrorText.Visibility = Visibility.Collapsed;
+
             SecretQuestionText.Text = _accountManager.SecretQuestion;
 
             // Defensive: shouldn't be reachable if there's no account yet,
             // but avoids showing a blank question if it somehow is.
             if (string.IsNullOrWhiteSpace(_accountManager.SecretQuestion))
             {
-                MessageBox.Show(this, "No account is set up yet.", "Reset password",
+                MessageBox.Show(Window.GetWindow(this), "No account is set up yet.", "Reset password",
                     MessageBoxButton.OK, MessageBoxImage.Information);
-                DialogResult = false;
-                Close();
+                BackToLoginRequested?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -69,11 +85,15 @@ namespace CoinTrace.WPF.Views
 
             _accountManager.ResetPassword(newPassword);
 
-            MessageBox.Show(this, "Your password has been reset. You can now sign in.", "Reset password",
+            MessageBox.Show(Window.GetWindow(this), "Your password has been reset. You can now sign in.", "Reset password",
                 MessageBoxButton.OK, MessageBoxImage.Information);
 
-            DialogResult = true;
-            Close();
+            PasswordResetCompleted?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void BackToLoginLink_Click(object sender, RoutedEventArgs e)
+        {
+            BackToLoginRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private static string LockoutMessage(TimeSpan remaining)

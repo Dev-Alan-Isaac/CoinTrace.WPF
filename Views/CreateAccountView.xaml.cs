@@ -4,9 +4,12 @@ using System.Windows.Controls;
 
 namespace CoinTrace.WPF.Views
 {
-    public partial class CreateAccountView : Window
+    public partial class CreateAccountView : UserControl
     {
         private readonly AccountManager _accountManager = new();
+
+        /// <summary>Raised once the account is created. MainWindow swaps in LoginView.</summary>
+        public event EventHandler? AccountCreated;
 
         public string CreatedUsername { get; private set; } = string.Empty;
 
@@ -56,8 +59,7 @@ namespace CoinTrace.WPF.Views
             _accountManager.CreateAccount(username, password, secretQuestion, secretAnswer);
 
             CreatedUsername = username;
-            DialogResult = true;
-            Close();
+            AccountCreated?.Invoke(this, EventArgs.Empty);
         }
 
         private string GetSecretQuestionText()
