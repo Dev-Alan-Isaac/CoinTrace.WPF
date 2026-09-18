@@ -1,0 +1,145 @@
+﻿<UserControl
+    x:Class="Smart_Tools.WPF.Views.MemorialView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Grid
+        x:Name="RootGrid"
+        Background="{DynamicResource ContentBg}"
+        Opacity="0">
+
+        <!--
+            Optional full-page background image. Both this and the dimming
+            overlay below start Collapsed - the code-behind only shows them
+            if BackgroundImagePath actually points to a real file, so an
+            empty/missing path just leaves the plain ContentBg showing,
+            same as before.
+        -->
+        <Image
+            x:Name="ImgBackground"
+            Stretch="UniformToFill"
+            Visibility="Collapsed" />
+
+        <Border
+            x:Name="BackgroundOverlay"
+            Background="#99000000"
+            Visibility="Collapsed" />
+
+        <Border
+            Width="480"
+            Padding="32"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="{DynamicResource CardBg}"
+            BorderBrush="{DynamicResource CardBorder}"
+            BorderThickness="1"
+            CornerRadius="10">
+
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="30"
+                    Opacity="0.35"
+                    ShadowDepth="8"
+                    Color="Black" />
+            </Border.Effect>
+
+            <StackPanel HorizontalAlignment="Center">
+
+                <!--
+                    Optional photo of the person, shown as a circle. Same
+                    fallback approach as the background: starts Collapsed,
+                    only shown (in place of the flower icon below) if
+                    PhotoPath resolves to a real image file.
+                -->
+                <Ellipse
+                    x:Name="EllipsePhoto"
+                    Width="96"
+                    Height="96"
+                    Margin="0,0,0,14"
+                    Stroke="{DynamicResource CardBorder}"
+                    StrokeThickness="1"
+                    Visibility="Collapsed" />
+
+                <materialDesign:PackIcon
+                    x:Name="IconFallback"
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,0,12"
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource TextSecondary}"
+                    Kind="FlowerTulip" />
+
+                <!--  PLACEHOLDER - replace with the real name  -->
+                <TextBlock
+                    x:Name="TxtMemorialName"
+                    HorizontalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextPrimary}"
+                    Text="{DynamicResource Str_Memorial_Name}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+
+                <!--  PLACEHOLDER - replace with the real dates  -->
+                <TextBlock
+                    x:Name="TxtMemorialDates"
+                    Margin="0,4,0,16"
+                    HorizontalAlignment="Center"
+                    FontSize="13"
+                    Foreground="{DynamicResource TextSecondary}"
+                    Text="{DynamicResource Str_Memorial_Dates}" />
+
+                <!--  PLACEHOLDER - replace with the real message  -->
+                <TextBlock
+                    x:Name="TxtMemorialMessage"
+                    FontSize="13"
+                    Foreground="{DynamicResource TextPrimary}"
+                    Text="{DynamicResource Str_Memorial_Message}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+
+            </StackPanel>
+
+        </Border>
+
+        <!--
+            Back button - returns to whatever view was showing before
+            Memorial was opened (handled by the parent window via the
+            BackRequested event). Sits above the background image/overlay
+            and the card since it's added last in the Grid.
+        -->
+        <Button
+            x:Name="BtnBack"
+            Width="36"
+            Height="36"
+            Margin="16"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="{DynamicResource CardBg}"
+            BorderBrush="{DynamicResource CardBorder}"
+            BorderThickness="1"
+            Click="BtnBack_Click"
+            Cursor="Hand"
+            ToolTip="{DynamicResource Str_Common_Back}">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="18">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+            <materialDesign:PackIcon
+                Width="18"
+                Height="18"
+                Foreground="{DynamicResource TextPrimary}"
+                Kind="ArrowLeft" />
+        </Button>
+
+    </Grid>
+
+</UserControl>
