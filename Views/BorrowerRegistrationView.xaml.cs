@@ -2,6 +2,7 @@
 using CoinTrace.WPF.Models;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 
 namespace CoinTrace.WPF.Views
@@ -17,21 +18,86 @@ namespace CoinTrace.WPF.Views
         {
             InitializeComponent();
 
-            BorrowerListBox.ItemsSource = _repository.Borrowers;
-            _repository.Saved += (_, _) => Dispatcher.Invoke(FlashSavedIndicator);
+            BorrowersGrid.ItemsSource = _repository.Borrowers;
+            _repository.Borrowers.CollectionChanged += (_, _) => { UpdateEmptyState(); UpdateSummary(); };
+            _repository.Saved += (_, _) => Dispatcher.Invoke(() =>
+            {
+                FlashSavedIndicator();
+                UpdateSummary();
+            });
 
             UpdateEmptyState();
+            UpdateSummary();
         }
 
-        private void AddBorrowerButton_Click(object sender, RoutedEventArgs e)
+        // ---------------- Add borrower (modal) ----------------
+
+        private void BtnAddBorrower_Click(object sender, RoutedEventArgs e)
         {
+            TxtModalFullName.Text = string.Empty;
+            TxtModalPhone.Text = string.Empty;
+            TxtModalEmail.Text = string.Empty;
+            TxtModalAddress.Text = string.Empty;
+            TxtModalNotes.Text = string.Empty;
+            CmbModalStatus.SelectedItem = BorrowerStatus.Active;
+            BtnConfirmAddBorrower.IsEnabled = false;
+
+            AddBorrowerScrim.Visibility = Visibility.Visible;
+            AddBorrowerCard.Visibility = Visibility.Visible;
+            TxtModalFullName.Focus();
+        }
+
+        private void AddBorrowerScrim_MouseDown(object sender, MouseButtonEventArgs e) => CloseAddBorrowerOverlay();
+
+        private void BtnCloseAddBorrower_Click(object sender, RoutedEventArgs e) => CloseAddBorrowerOverlay();
+
+        private void CloseAddBorrowerOverlay()
+        {
+            AddBorrowerScrim.Visibility = Visibility.Collapsed;
+            AddBorrowerCard.Visibility = Visibility.Collapsed;
+        }
+
+        private void TxtModalFullName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (BtnConfirmAddBorrower == null)
+                return; // fires once during InitializeComponent before the button exists
+
+            BtnConfirmAddBorrower.IsEnabled = !string.IsNullOrWhiteSpace(TxtModalFullName.Text);
+        }
+
+        /// <summary>
+        /// Creates the borrower only now - nothing was added to the
+        /// repository just by opening the modal. Reuses
+        /// BorrowerRepository.AddNew() (which already wires the new
+        /// Borrower's PropertyChanged into the debounced auto-save) and
+        /// then fills in whatever the modal collected, so no repository
+        /// changes were needed for this to work.
+        /// </summary>
+        private void BtnConfirmAddBorrower_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(TxtModalFullName.Text))
+                return;
+
             var borrower = _repository.AddNew();
-            BorrowerListBox.SelectedItem = borrower;
+            borrower.FullName = TxtModalFullName.Text.Trim();
+            borrower.Status = CmbModalStatus.SelectedItem is BorrowerStatus status ? status : BorrowerStatus.Active;
+            borrower.PhoneNumber = TxtModalPhone.Text.Trim();
+            borrower.Email = TxtModalEmail.Text.Trim();
+            borrower.Address = TxtModalAddress.Text.Trim();
+            borrower.Notes = TxtModalNotes.Text.Trim();
+
+            CloseAddBorrowerOverlay();
+
+            BorrowersGrid.SelectedItem = borrower;
+            BorrowersGrid.ScrollIntoView(borrower);
         }
 
-        private void DeleteBorrowerButton_Click(object sender, RoutedEventArgs e)
+        // ---------------- Grid row actions ----------------
+
+        /// <summary>Delete button embedded in a grid row - the row's Borrower is that button's DataContext.</summary>
+        private void DeleteRowButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DetailPanel.DataContext is not Borrower borrower)
+            if ((sender as FrameworkElement)?.DataContext is not Borrower borrower)
                 return;
 
             var result = MessageBox.Show(
@@ -48,30 +114,53 @@ namespace CoinTrace.WPF.Views
             _repository.Remove(borrower);
         }
 
-        private void BorrowerListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DetailPanel.DataContext = BorrowerListBox.SelectedItem;
-            UpdateEmptyState();
-        }
+        // ---------------- Search ----------------
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string query = SearchBox.Text.Trim();
 
-            BorrowerListBox.ItemsSource = string.IsNullOrEmpty(query)
+            BorrowersGrid.ItemsSource = string.IsNullOrEmpty(query)
                 ? _repository.Borrowers
                 : _repository.Borrowers.Where(b =>
                     b.FullName.Contains(query, StringComparison.OrdinalIgnoreCase) ||
                     b.PhoneNumber.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                    b.Email.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+                    b.Email.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    b.Address.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            UpdateEmptyState();
         }
+
+        // ---------------- Empty state / summary ----------------
 
         private void UpdateEmptyState()
         {
-            bool hasSelection = BorrowerListBox.SelectedItem is Borrower;
+            // Only the "nothing at all" state hides the grid - an empty
+            // search result still shows the (now row-less) grid rather
+            // than this panel, so the search box stays reachable.
+            EmptyStatePanel.Visibility = _repository.Borrowers.Count == 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
 
-            EmptyStatePanel.Visibility = hasSelection ? Visibility.Collapsed : Visibility.Visible;
-            DetailScrollViewer.Visibility = hasSelection ? Visibility.Visible : Visibility.Collapsed;
+        private void UpdateSummary()
+        {
+            int total = _repository.Borrowers.Count;
+
+            if (total == 0)
+            {
+                SummaryPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            int active = _repository.Borrowers.Count(b => b.Status == BorrowerStatus.Active);
+            int needsAttention = _repository.Borrowers.Count(b =>
+                b.Status == BorrowerStatus.PastDue || b.Status == BorrowerStatus.Defaulted);
+
+            TxtSummaryTotal.Text = $"{total} total";
+            TxtSummaryActive.Text = $"{active} active";
+            TxtSummaryAttention.Text = $"{needsAttention} need attention";
+            SummaryPanel.Visibility = Visibility.Visible;
         }
 
         /// <summary>Briefly shows the "Saved" indicator, then fades it back out.</summary>

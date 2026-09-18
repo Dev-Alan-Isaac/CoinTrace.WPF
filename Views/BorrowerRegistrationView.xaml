@@ -9,10 +9,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:CoinTrace.WPF.Models"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    d:DesignHeight="600"
-    d:DesignWidth="1000"
+    d:DesignHeight="640"
+    d:DesignWidth="1100"
     mc:Ignorable="d">
 
+    <!--
+        Same page shell as ValidateFileView/SettingsView: an ElevatedCardStyle
+        header (icon badge + PageTitle/PageSubtitle, then an action bar) over
+        a CardStyle content card. "Add borrower" no longer drops a live row
+        straight into the grid - it opens the same scrim+centered-card modal
+        SettingsView uses for "Add Category"/"Add Pattern", and the borrower
+        is only actually created (via BorrowerRepository) once "Add" is
+        confirmed. Existing borrowers are still edited in place, cell by
+        cell, directly in the grid.
+    -->
     <UserControl.Resources>
 
         <ObjectDataProvider
@@ -28,275 +38,92 @@
         <converters:BorrowerStatusToLabelConverter x:Key="StatusToLabel" />
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
-        <Style x:Key="FieldTextBoxStyle" TargetType="Control">
-            <Setter Property="Padding" Value="10,8" />
-            <Setter Property="Background" Value="{DynamicResource CardBg}" />
-            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-        <Style BasedOn="{StaticResource FieldTextBoxStyle}" TargetType="TextBox" />
-        <Style BasedOn="{StaticResource FieldTextBoxStyle}" TargetType="ComboBox" />
-
-        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Margin" Value="0,0,0,4" />
-        </Style>
-
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{DynamicResource AccentGradient}" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="12,10" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
-                            <ContentPresenter
-                                Margin="{TemplateBinding Padding}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.9" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.75" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#E5484D" />
-            <Setter Property="BorderBrush" Value="#E5484D" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-                            <ContentPresenter
-                                Margin="{TemplateBinding Padding}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.8" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  Small round icon badge used for the contact-method row (phone/email/address)  -->
+        <!--  Small round icon badge used for the grid's "On file" column (phone/email/address on file)  -->
         <Style x:Key="ContactBadgeStyle" TargetType="Border">
             <Setter Property="Width" Value="22" />
             <Setter Property="Height" Value="22" />
-            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="Margin" Value="0,0,4,0" />
             <Setter Property="CornerRadius" Value="11" />
             <Setter Property="Background" Value="{DynamicResource AccentColorSubtle}" />
         </Style>
 
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid Background="{DynamicResource ContentBg}">
 
-        <!--  ================= LEFT: borrower list =================  -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  ================= HEADER =================  -->
+
         <Border
-            Grid.Column="0"
-            Background="{DynamicResource CardBg}"
-            BorderBrush="{DynamicResource CardBorder}"
-            BorderThickness="0,0,1,0">
-            <DockPanel>
+            Grid.Row="0"
+            Margin="16,16,16,12"
+            Padding="20,16"
+            Style="{StaticResource ElevatedCardStyle}">
 
-                <StackPanel Margin="16,16,16,12" DockPanel.Dock="Top">
-                    <TextBlock
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Foreground="{DynamicResource TextPrimary}"
-                        Text="Borrowers" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                    <TextBlock
-                        Margin="0,14,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Search" />
-                    <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" />
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                    <Button
-                        x:Name="AddBorrowerButton"
-                        Margin="0,12,0,0"
-                        HorizontalAlignment="Stretch"
-                        Click="AddBorrowerButton_Click"
-                        Content="+ Add borrower"
-                        Style="{StaticResource PrimaryButtonStyle}" />
-                </StackPanel>
+                    <Border Grid.Column="0" Style="{StaticResource PageHeaderIconBadgeStyle}">
+                        <materialDesign:PackIcon
+                            Width="20"
+                            Height="20"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="White"
+                            Kind="AccountMultiple" />
+                    </Border>
 
-                <ListBox
-                    x:Name="BorrowerListBox"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    SelectionChanged="BorrowerListBox_SelectionChanged">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="Padding" Value="0" />
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <ContentPresenter />
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border
-                                Margin="12,4"
-                                Padding="12"
-                                Background="{DynamicResource ContentBg}"
-                                CornerRadius="8">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
-                                        <Setter Property="BorderThickness" Value="1" />
-                                        <Style.Triggers>
-                                            <DataTrigger Value="True">
-                                                <DataTrigger.Binding>
-                                                    <Binding Path="IsSelected" RelativeSource="{RelativeSource AncestorType=ListBoxItem}" />
-                                                </DataTrigger.Binding>
-                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}" />
-                                                <Setter Property="BorderThickness" Value="2" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource PageTitle}" Text="Borrowers" />
+                        <TextBlock Style="{StaticResource PageSubtitle}" Text="Everyone you're currently tracking a loan or balance with. Click any cell in the grid to edit it - changes save automatically." />
+                    </StackPanel>
+                </Grid>
 
-                                <StackPanel>
-                                    <TextBlock
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextPrimary}"
-                                        Text="{Binding FullName}"
-                                        TextTrimming="CharacterEllipsis" />
+                <!--  ================= ACTION BAR: search + saved indicator + add =================  -->
 
-                                    <Border
-                                        Margin="0,6,0,0"
-                                        Padding="8,2"
-                                        HorizontalAlignment="Left"
-                                        Background="{Binding Status, Converter={StaticResource StatusToBrush}}"
-                                        CornerRadius="10">
-                                        <TextBlock
-                                            FontSize="10"
-                                            FontWeight="SemiBold"
-                                            Foreground="White"
-                                            Text="{Binding Status, Converter={StaticResource StatusToLabel}}" />
-                                    </Border>
-
-                                    <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
-                                        <Border
-                                            Style="{StaticResource ContactBadgeStyle}"
-                                            ToolTip="Has a phone number on file"
-                                            Visibility="{Binding HasPhone, Converter={StaticResource BoolToVis}}">
-                                            <materialDesign:PackIcon
-                                                Width="12"
-                                                Height="12"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"
-                                                Foreground="{DynamicResource AccentColor}"
-                                                Kind="Phone" />
-                                        </Border>
-                                        <Border
-                                            Style="{StaticResource ContactBadgeStyle}"
-                                            ToolTip="Has an email on file"
-                                            Visibility="{Binding HasEmail, Converter={StaticResource BoolToVis}}">
-                                            <materialDesign:PackIcon
-                                                Width="12"
-                                                Height="12"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"
-                                                Foreground="{DynamicResource AccentColor}"
-                                                Kind="Email" />
-                                        </Border>
-                                        <Border
-                                            Style="{StaticResource ContactBadgeStyle}"
-                                            ToolTip="Has an address on file"
-                                            Visibility="{Binding HasAddress, Converter={StaticResource BoolToVis}}">
-                                            <materialDesign:PackIcon
-                                                Width="12"
-                                                Height="12"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"
-                                                Foreground="{DynamicResource AccentColor}"
-                                                Kind="MapMarker" />
-                                        </Border>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-            </DockPanel>
-        </Border>
-
-        <!--  ================= RIGHT: detail form =================  -->
-        <Grid Grid.Column="1" Background="{DynamicResource ContentBg}">
-
-            <StackPanel
-                x:Name="EmptyStatePanel"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-                <materialDesign:PackIcon
-                    Width="40"
-                    Height="40"
-                    HorizontalAlignment="Center"
-                    Foreground="{DynamicResource TextSecondary}"
-                    Kind="AccountMultipleOutline" />
-                <TextBlock
-                    Margin="0,10,0,0"
-                    Foreground="{DynamicResource TextSecondary}"
-                    Text="Select a borrower, or add a new one" />
-            </StackPanel>
-
-            <ScrollViewer
-                x:Name="DetailScrollViewer"
-                VerticalScrollBarVisibility="Auto"
-                Visibility="Collapsed">
-                <StackPanel
-                    x:Name="DetailPanel"
-                    MaxWidth="520"
-                    Margin="32"
-                    HorizontalAlignment="Left">
+                <Border
+                    Grid.Row="1"
+                    Margin="0,12,0,0"
+                    Padding="12,8"
+                    Background="{DynamicResource ContentBg}"
+                    BorderBrush="{DynamicResource CardBorder}"
+                    BorderThickness="1"
+                    CornerRadius="8">
 
                     <Grid>
-                        <TextBlock
-                            FontSize="18"
-                            FontWeight="Bold"
-                            Foreground="{DynamicResource TextPrimary}"
-                            Text="Borrower details" />
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox
+                            x:Name="SearchBox"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            TextChanged="SearchBox_TextChanged"
+                            ToolTip="Search by name, phone, email or address" />
+
+                        <StackPanel
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
                             <materialDesign:PackIcon
                                 x:Name="SavedIcon"
                                 Width="14"
@@ -314,66 +141,413 @@
                                 Opacity="0"
                                 Text="Saved" />
                         </StackPanel>
+
+                        <Button
+                            x:Name="BtnAddBorrower"
+                            Grid.Column="4"
+                            Width="150"
+                            Height="38"
+                            VerticalAlignment="Center"
+                            Click="BtnAddBorrower_Click"
+                            Content="+ Add borrower"
+                            Style="{StaticResource AccentPrimaryButtonStyle}"
+                            ToolTip="Add a new borrower" />
+
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+
+        <!--  ================= CONTENT =================  -->
+
+        <Grid Grid.Row="1" Margin="16,0,16,16">
+
+            <Border Padding="14" Style="{StaticResource CardStyle}">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!--  ============ SECTION HEADING + COMPACT SUMMARY ============  -->
+
+                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Style="{StaticResource SectionHeading}"
+                            Text="All borrowers" />
+
+                        <!--  Three small pills: total / active / needs attention. Hidden until there's at least one borrower.  -->
+                        <StackPanel
+                            x:Name="SummaryPanel"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Visibility="Collapsed">
+
+                            <Border
+                                Margin="0,0,6,0"
+                                Padding="8,4"
+                                Background="{DynamicResource StatusInfoBg}"
+                                CornerRadius="6">
+                                <TextBlock
+                                    x:Name="TxtSummaryTotal"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource StatusInfoFg}"
+                                    Text="0 total" />
+                            </Border>
+
+                            <Border
+                                Margin="0,0,6,0"
+                                Padding="8,4"
+                                Background="{DynamicResource StatusSuccessBg}"
+                                CornerRadius="6">
+                                <TextBlock
+                                    x:Name="TxtSummaryActive"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource StatusSuccessFg}"
+                                    Text="0 active" />
+                            </Border>
+
+                            <Border
+                                Padding="8,4"
+                                Background="{DynamicResource StatusErrorBg}"
+                                CornerRadius="6">
+                                <TextBlock
+                                    x:Name="TxtSummaryAttention"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource StatusErrorFg}"
+                                    Text="0 need attention" />
+                            </Border>
+
+                        </StackPanel>
                     </Grid>
 
-                    <TextBlock
-                        Margin="0,20,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Full name" />
-                    <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" />
+                    <!--  ============ GRID + EMPTY STATE ============  -->
 
-                    <TextBlock
-                        Margin="0,16,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Status" />
-                    <ComboBox ItemsSource="{Binding Source={StaticResource BorrowerStatusValues}}" SelectedItem="{Binding Status}" />
+                    <Grid Grid.Row="1">
 
-                    <TextBlock
-                        Margin="0,16,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Phone" />
-                    <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+                        <DataGrid
+                            x:Name="BorrowersGrid"
+                            AutoGenerateColumns="False"
+                            BorderThickness="0"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="False"
+                            CanUserResizeRows="False"
+                            HeadersVisibility="Column"
+                            RowHeight="42"
+                            SelectionMode="Single"
+                            SelectionUnit="FullRow">
+                            <DataGrid.Columns>
 
-                    <TextBlock
-                        Margin="0,16,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Email" />
-                    <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+                                <DataGridTextColumn
+                                    Width="1.4*"
+                                    Binding="{Binding FullName, UpdateSourceTrigger=PropertyChanged}"
+                                    Header="Full name" />
 
-                    <TextBlock
-                        Margin="0,16,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Address" />
-                    <TextBox
-                        Height="60"
-                        VerticalContentAlignment="Top"
-                        AcceptsReturn="True"
-                        Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap" />
+                                <DataGridTemplateColumn
+                                    Width="120"
+                                    Header="Status"
+                                    SortMemberPath="Status">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border
+                                                Padding="8,2"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Background="{Binding Status, Converter={StaticResource StatusToBrush}}"
+                                                CornerRadius="10">
+                                                <TextBlock
+                                                    FontSize="10"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="White"
+                                                    Text="{Binding Status, Converter={StaticResource StatusToLabel}}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <ComboBox
+                                                BorderThickness="0"
+                                                ItemsSource="{Binding Source={StaticResource BorrowerStatusValues}}"
+                                                SelectedItem="{Binding Status, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
 
-                    <TextBlock
-                        Margin="0,16,0,4"
-                        Style="{StaticResource FieldLabelStyle}"
-                        Text="Notes" />
-                    <TextBox
-                        Height="90"
-                        VerticalContentAlignment="Top"
-                        AcceptsReturn="True"
-                        Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap" />
+                                <DataGridTextColumn
+                                    Width="1.1*"
+                                    Binding="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}"
+                                    Header="Phone" />
 
-                    <Button
-                        x:Name="DeleteBorrowerButton"
-                        Margin="0,24,0,0"
-                        HorizontalAlignment="Left"
-                        Click="DeleteBorrowerButton_Click"
-                        Content="Delete borrower"
-                        Style="{StaticResource SecondaryButtonStyle}" />
+                                <DataGridTextColumn
+                                    Width="1.3*"
+                                    Binding="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                    Header="Email" />
 
-                </StackPanel>
-            </ScrollViewer>
+                                <DataGridTextColumn
+                                    Width="1.4*"
+                                    Binding="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
+                                    Header="Address" />
+
+                                <DataGridTextColumn
+                                    Width="1.4*"
+                                    Binding="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                    Header="Notes" />
+
+                                <!--  Read-only "what's on file" summary  -->
+                                <DataGridTemplateColumn
+                                    Width="90"
+                                    Header="On file"
+                                    IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                                <Border
+                                                    Style="{StaticResource ContactBadgeStyle}"
+                                                    ToolTip="Has a phone number on file"
+                                                    Visibility="{Binding HasPhone, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon
+                                                        Width="12"
+                                                        Height="12"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="{DynamicResource AccentColor}"
+                                                        Kind="Phone" />
+                                                </Border>
+                                                <Border
+                                                    Style="{StaticResource ContactBadgeStyle}"
+                                                    ToolTip="Has an email on file"
+                                                    Visibility="{Binding HasEmail, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon
+                                                        Width="12"
+                                                        Height="12"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="{DynamicResource AccentColor}"
+                                                        Kind="Email" />
+                                                </Border>
+                                                <Border
+                                                    Style="{StaticResource ContactBadgeStyle}"
+                                                    ToolTip="Has an address on file"
+                                                    Visibility="{Binding HasAddress, Converter={StaticResource BoolToVis}}">
+                                                    <materialDesign:PackIcon
+                                                        Width="12"
+                                                        Height="12"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="{DynamicResource AccentColor}"
+                                                        Kind="MapMarker" />
+                                                </Border>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!--  Row action: delete, with confirmation in code-behind  -->
+                                <DataGridTemplateColumn
+                                    Width="48"
+                                    CanUserResize="False"
+                                    Header=""
+                                    IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button
+                                                Click="DeleteRowButton_Click"
+                                                Style="{StaticResource IconButtonStyle}"
+                                                ToolTip="Delete borrower">
+                                                <materialDesign:PackIcon
+                                                    Width="15"
+                                                    Height="15"
+                                                    Kind="TrashCanOutline" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Border
+                            x:Name="EmptyStatePanel"
+                            Padding="40"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource RoundedCardStyle}"
+                            Visibility="Collapsed">
+                            <StackPanel HorizontalAlignment="Center">
+                                <materialDesign:PackIcon
+                                    Width="40"
+                                    Height="40"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{DynamicResource TextSecondary}"
+                                    Kind="AccountMultipleOutline" />
+                                <TextBlock
+                                    Margin="0,12,0,0"
+                                    HorizontalAlignment="Center"
+                                    Style="{StaticResource PageSubtitle}"
+                                    Text="No borrowers yet - add one to get started"
+                                    TextAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+
+                </Grid>
+            </Border>
 
         </Grid>
+
+        <!--  ================= ADD BORROWER OVERLAY =================  -->
+        <!--
+            Same in-app modal pattern as SettingsView's "Add Category"/"Add
+            Pattern" overlays: a click-to-dismiss scrim behind a centered,
+            drop-shadowed card, both embedded in this same UserControl (not
+            a separate Window) and spanning both grid rows via
+            Grid.RowSpan="2" so they sit above the header too. The borrower
+            itself is only created - via BorrowerRepository.AddNew(), the
+            same call the grid used before - once "Add borrower" is pressed
+            here; closing the modal any other way discards whatever was
+            typed.
+        -->
+
+        <Border
+            x:Name="AddBorrowerScrim"
+            Grid.RowSpan="2"
+            Background="#B3000000"
+            MouseDown="AddBorrowerScrim_MouseDown"
+            Visibility="Collapsed" />
+
+        <Border
+            x:Name="AddBorrowerCard"
+            Grid.RowSpan="2"
+            Width="440"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="{DynamicResource SidebarBg}"
+            BorderBrush="{DynamicResource SidebarBorder}"
+            BorderThickness="1"
+            CornerRadius="12"
+            Visibility="Collapsed">
+
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="36"
+                    Opacity="0.45"
+                    ShadowDepth="10"
+                    Color="Black" />
+            </Border.Effect>
+
+            <StackPanel Margin="20">
+
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource SidebarText}"
+                            Text="Add borrower" />
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            FontSize="11.5"
+                            Foreground="{DynamicResource SidebarTextMuted}"
+                            Text="Only the name is required - fill in the rest now or edit it later in the grid."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Button
+                        Grid.Column="1"
+                        Width="26"
+                        Height="26"
+                        VerticalAlignment="Top"
+                        Click="BtnCloseAddBorrower_Click"
+                        Content="✕"
+                        Foreground="{DynamicResource SidebarText}"
+                        Style="{StaticResource NeutralIconButtonStyle}"
+                        ToolTip="Close" />
+
+                </Grid>
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="FULL NAME" />
+                <TextBox x:Name="TxtModalFullName" TextChanged="TxtModalFullName_TextChanged" />
+
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="STATUS" />
+                        <ComboBox x:Name="CmbModalStatus" ItemsSource="{Binding Source={StaticResource BorrowerStatusValues}}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="PHONE" />
+                        <TextBox x:Name="TxtModalPhone" />
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock
+                    Margin="0,14,0,0"
+                    Style="{StaticResource FieldLabel}"
+                    Text="EMAIL" />
+                <TextBox x:Name="TxtModalEmail" />
+
+                <TextBlock
+                    Margin="0,14,0,0"
+                    Style="{StaticResource FieldLabel}"
+                    Text="ADDRESS" />
+                <TextBox x:Name="TxtModalAddress" />
+
+                <TextBlock
+                    Margin="0,14,0,0"
+                    Style="{StaticResource FieldLabel}"
+                    Text="NOTES" />
+                <TextBox
+                    x:Name="TxtModalNotes"
+                    Height="60"
+                    VerticalContentAlignment="Top"
+                    AcceptsReturn="True"
+                    TextWrapping="Wrap" />
+
+                <StackPanel
+                    Margin="0,20,0,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        Width="90"
+                        Margin="0,0,8,0"
+                        Click="BtnCloseAddBorrower_Click"
+                        Content="Cancel" />
+                    <Button
+                        x:Name="BtnConfirmAddBorrower"
+                        Width="130"
+                        Click="BtnConfirmAddBorrower_Click"
+                        Content="Add borrower"
+                        IsEnabled="False"
+                        Style="{StaticResource PrimaryButtonStyle}" />
+                </StackPanel>
+
+            </StackPanel>
+
+        </Border>
 
     </Grid>
 </UserControl>
