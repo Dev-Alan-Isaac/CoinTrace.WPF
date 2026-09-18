@@ -1,0 +1,151 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ============================================================
+        DARK THEME  —  "professional" pass
+        ============================================================
+        Same key set as Light.xaml (required — ThemeManager swaps this
+        whole dictionary in at runtime, so every key here must exist
+        there too and vice versa). Deeper near-black surfaces instead of
+        dark-gray-blue, a slightly brighter accent than the light theme
+        for contrast against a near-black background, and a vertical
+        sidebar gradient to match.
+    -->
+
+    <!--  Page / content area background (behind cards)  -->
+    <SolidColorBrush x:Key="ContentBg" Color="#12161D" />
+
+    <!--  Card / panel surfaces  -->
+    <SolidColorBrush x:Key="CardBg" Color="#1B212C" />
+    <SolidColorBrush x:Key="CardBorder" Color="#2A3242" />
+
+    <!--  A slightly recessed row background used inside cards (list rows, etc.)  -->
+    <SolidColorBrush x:Key="RowBg" Color="#212836" />
+
+    <!--  Text  -->
+    <SolidColorBrush x:Key="TextPrimary" Color="#EDEFF4" />
+    <SolidColorBrush x:Key="TextSecondary" Color="#93A0B4" />
+
+    <!--  Inputs (TextBox / ComboBox) that sit on a dark card  -->
+    <SolidColorBrush x:Key="InputBg" Color="#212836" />
+    <SolidColorBrush x:Key="InputBorder" Color="#384157" />
+    <SolidColorBrush x:Key="InputText" Color="#EDEFF4" />
+
+    <!--
+        Accent — brightened slightly relative to Light.xaml's #3D6FE0 so
+        it keeps the same visual weight/contrast against a near-black
+        background instead of looking muddy.
+    -->
+    <SolidColorBrush x:Key="AccentColor" Color="#5C86E8" />
+
+    <!--
+        ============ SEMANTIC STATUS COLORS ============
+        Unchanged from the original — already tuned as tinted-dark
+        backgrounds with a brighter foreground for this surface.
+    -->
+    <SolidColorBrush x:Key="StatusSuccessBg" Color="#1B3B2A" />
+    <SolidColorBrush x:Key="StatusSuccessFg" Color="#4ADE80" />
+
+    <SolidColorBrush x:Key="StatusInfoBg" Color="#1B2C48" />
+    <SolidColorBrush x:Key="StatusInfoFg" Color="#60A5FA" />
+
+    <SolidColorBrush x:Key="StatusWarningBg" Color="#40320F" />
+    <SolidColorBrush x:Key="StatusWarningFg" Color="#FBBF24" />
+
+    <SolidColorBrush x:Key="StatusErrorBg" Color="#3B1D1D" />
+    <SolidColorBrush x:Key="StatusErrorFg" Color="#F87171" />
+
+    <!--
+        ============ SIDEBAR (options panel present in every view) ============
+        Was a flat #1B2530. Same vertical-gradient treatment as
+        Light.xaml, tuned a touch darker so it still reads as "the
+        darkest surface in the app" next to the new deep ContentBg.
+    -->
+    <LinearGradientBrush x:Key="SidebarBg" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#1E2731" />
+        <GradientStop Offset="1" Color="#141920" />
+    </LinearGradientBrush>
+
+    <!--  Nested "step"/filter cards that sit ON the sidebar  -->
+    <SolidColorBrush x:Key="SidebarCardBg" Color="#2C3547" />
+
+    <!--  Hover background for sidebar nav buttons (MainWindow)  -->
+    <SolidColorBrush x:Key="SidebarItemHoverBg" Color="#313B4E" />
+
+    <!--
+        A further-recessed sub-panel inside a sidebar card (e.g. "Group
+        Unknown Extensions" panel nested inside a step card)
+    -->
+    <SolidColorBrush x:Key="SidebarSubPanelBg" Color="#1A202B" />
+
+    <!--  Text sitting directly on the (always-dark) sidebar  -->
+    <SolidColorBrush x:Key="SidebarText" Color="#EDEFF4" />
+    <SolidColorBrush x:Key="SidebarTextMuted" Color="#93A0B4" />
+
+    <!--
+        Inputs that sit ON the sidebar — separate from InputBg/InputBorder
+        above, which are for inputs sitting on the main CardBg surface
+    -->
+    <SolidColorBrush x:Key="SidebarInputBg" Color="#171D27" />
+    <SolidColorBrush x:Key="SidebarInputBorder" Color="#3C4759" />
+    <SolidColorBrush x:Key="SidebarInputText" Color="#EDEFF4" />
+
+    <!--
+        Subtle hairline border for panels/modals that sit on the
+        (always-dark) SidebarBg surface — e.g. the video-compare overlay.
+        Same translucent-white value in both themes since that surface
+        never changes color between Light/Dark.
+    -->
+    <SolidColorBrush x:Key="SidebarBorder" Color="#17FFFFFF" />
+
+    <!--
+        Hairline border for the video-compare player frames, which sit
+        on a fixed black MediaElement background regardless of theme.
+    -->
+    <SolidColorBrush x:Key="PlayerFrameBorder" Color="#1FFFFFFF" />
+
+    <!--
+        ============ NEW: ACCENT STATE + GRADIENT TOKENS ============
+        Additive only — tuned lighter than Light.xaml's equivalents so
+        hover/pressed states stay visible against dark surfaces.
+    -->
+    <SolidColorBrush x:Key="AccentColorHover" Color="#729AEF" />
+    <SolidColorBrush x:Key="AccentColorPressed" Color="#4670C9" />
+    <SolidColorBrush x:Key="AccentColorSubtle" Color="#1C2A47" />
+
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#6E96EE" />
+        <GradientStop Offset="1" Color="#3D62C4" />
+    </LinearGradientBrush>
+
+    <!--
+        ============ NEW: ELEVATION ============
+        A shadow barely registers on a near-black background, so this
+        is deliberately more opaque than Light.xaml's version but still
+        blurred/soft rather than a hard drop-shadow — the goal is a
+        faint "lifted" edge, not a black smudge.
+    -->
+    <DropShadowEffect
+        x:Key="CardElevation"
+        BlurRadius="20"
+        Direction="270"
+        Opacity="0.45"
+        ShadowDepth="3"
+        Color="#000000" />
+
+    <DropShadowEffect
+        x:Key="ButtonElevation"
+        BlurRadius="14"
+        Direction="270"
+        Opacity="0.35"
+        ShadowDepth="2"
+        Color="#000000" />
+
+    <!--
+        Raw Color (not a Brush) — see Light.xaml for why this isn't a
+        shared Effect resource. Lighter than Light.xaml's version so the
+        hover glow still reads against a near-black card.
+    -->
+    <Color x:Key="ButtonHoverGlowColor">#6E96EE</Color>
+
+</ResourceDictionary>
