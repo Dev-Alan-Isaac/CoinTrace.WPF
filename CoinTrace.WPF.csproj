@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Language\" />
+    <Folder Include="Modules\" />
     <Folder Include="Views\" />
     <Folder Include="Theme\" />
   </ItemGroup>
