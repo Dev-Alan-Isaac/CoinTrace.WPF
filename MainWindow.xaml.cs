@@ -44,6 +44,7 @@ namespace CoinTrace.WPF
         private readonly MemorialView _memorialView = new MemorialView();
         private readonly ContactDeveloperView _contactDeveloperView = new ContactDeveloperView();
         private readonly SettingsView _settingsView = new SettingsView();
+        private readonly BorrowerRegistrationView _borrowerRegistrationView = new BorrowerRegistrationView();
 
         // ---------------- Auth gating ----------------
         // MainContentArea also hosts the pre-login screens. The sidebar and
@@ -189,6 +190,12 @@ namespace CoinTrace.WPF
                 _titleClickCount = 0;
                 NavigateTo(_memorialView, "Memorial");
             }
+        }
+
+        // ---------------- Borrowers ----------------
+        private void BtnBorrowers_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(_borrowerRegistrationView, "Borrowers");
         }
 
         // ---------------- Options ----------------

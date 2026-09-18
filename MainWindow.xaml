@@ -358,7 +358,32 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0,4,0,0" KeyboardNavigation.DirectionalNavigation="Cycle">
 
+                        <!--  BORROWERS SECTION  -->
+                        <TextBlock
+                            x:Name="HeaderBorrowers"
+                            Style="{StaticResource SidebarHeaderStyle}"
+                            Text="BORROWERS" />
 
+                        <RadioButton
+                            x:Name="BtnBorrowers"
+                            Checked="BtnBorrowers_Click"
+                            GroupName="MainNav"
+                            Style="{StaticResource SidebarNavButtonStyle}"
+                            ToolTip="Borrowers">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Width="18"
+                                    Height="18"
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Center"
+                                    Kind="AccountMultiple" />
+                                <TextBlock
+                                    x:Name="LblBorrowers"
+                                    VerticalAlignment="Center"
+                                    Text="Borrowers"
+                                    TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </RadioButton>
 
                         <!--  OPTIONS SECTION  -->
                         <TextBlock
