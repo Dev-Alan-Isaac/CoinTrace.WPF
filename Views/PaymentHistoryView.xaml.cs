@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace CoinTrace.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for LoanView.xaml
+    /// Interaction logic for PaymentHistoryView.xaml
     /// </summary>
-    public partial class LoanView : UserControl
+    public partial class PaymentHistoryView : UserControl
     {
-        public LoanView()
+        public PaymentHistoryView()
         {
             InitializeComponent();
         }
